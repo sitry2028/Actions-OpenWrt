@@ -26,7 +26,4 @@ sed -i 's/"Zbtlink ZBT-Z8103AX"/"TikTok-803"/' target/linux/mediatek/dts/mt7981b
 
 # 修改 UBI 分区大小为障眼法值（之前已添加，但确保存在）
 sed -i 's/0x580000 0x4000000/0x580000 0x20000000/' target/linux/mediatek/dts/mt7981b-zbtlink-zbt-z8103ax.dts
-# 强制设置目标平台为 mediatek/filogic 并指定设备
-echo "CONFIG_TARGET_mediatek=y" >> .config
-echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
-echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
+
