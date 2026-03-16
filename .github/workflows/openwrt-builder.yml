@@ -98,15 +98,14 @@ jobs:
         sudo chmod 600 /swapfile
         sudo swapon /swapfile || true
         cd openwrt
-        # 第一步：强制写入正确的平台配置
+        # 写入配置
         echo "CONFIG_TARGET_mediatek=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
-        # 第二步：基于当前配置进行扩展，并锁定配置
-        make olddefconfig
-        echo -e "$(nproc) thread compile"
-        # 第三步：开始编译
-        make -j$(nproc) V=s
+        # 用一个命令完成配置和编译（避免多次调用终端）
+        export TERM=xterm-256color && make olddefconfig && \
+        export TERM=xterm-256color && echo -e "$(nproc) thread compile" && \
+        export TERM=xterm-256color && make -j$(nproc) V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
