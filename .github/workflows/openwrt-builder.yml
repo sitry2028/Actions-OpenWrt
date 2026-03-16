@@ -93,6 +93,9 @@ jobs:
     - name: Compile the firmware
       id: compile
       run: |
+        # 修复 swap 权限问题
+        sudo chmod 600 /swapfile
+        sudo swapon /swapfile || true
         cd openwrt
         # 第一步：强制写入正确的平台配置
         echo "CONFIG_TARGET_mediatek=y" >> .config
