@@ -82,11 +82,18 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-    - name: Download package
-      id: package
+    - name: Prepare and download
+      id: prepare
       run: |
         export TERM=xterm-256color
         cd openwrt
+        # 第一步：先写入配置
+        echo "CONFIG_TARGET_mediatek=y" >> .config
+        echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
+        echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
+        # 第二步：生成完整配置
+        make olddefconfig
+        # 第三步：下载源码包
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -99,14 +106,11 @@ jobs:
         sudo chmod 600 /swapfile
         sudo swapon /swapfile || true
         cd openwrt
-        # 写入配置
-        echo "CONFIG_TARGET_mediatek=y" >> .config
-        echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
-        echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
-        # 用一个命令完成配置和编译（避免多次调用终端）
-        export TERM=xterm-256color && make olddefconfig && \
-        export TERM=xterm-256color && echo -e "$(nproc) thread compile" && \
-        export TERM=xterm-256color && make -j$(nproc) V=s
+        # 确保配置还在
+        make olddefconfig
+        echo -e "$(nproc) thread compile"
+        # 开始编译
+        make -j$(nproc) V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
