@@ -93,6 +93,7 @@ jobs:
     - name: Compile the firmware
       id: compile
       run: |
+        export TERM=xterm-256color
         # 修复 swap 权限问题
         sudo chmod 600 /swapfile
         sudo swapon /swapfile || true
