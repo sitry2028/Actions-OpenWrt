@@ -27,11 +27,10 @@ env:
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
-  # 新增以下三行，指定目标平台
   TARGET: mediatek
   SUBTARGET: filogic
   DEVICE: zbtlink_zbt-z8103ax
-  
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -82,18 +81,15 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
-        - name: Prepare and download
+    - name: Prepare and download
       id: prepare
       run: |
         export TERM=xterm-256color
         cd openwrt
-        # 第一步：先写入配置
         echo "CONFIG_TARGET_mediatek=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
-        # 第二步：生成完整配置
         make olddefconfig
-        # 第三步：下载源码包
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -113,6 +109,7 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
     - name: Check space usage
       if: (!cancelled())
       run: df -hT
