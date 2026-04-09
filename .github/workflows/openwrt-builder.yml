@@ -98,17 +98,14 @@ jobs:
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
-        - name: Compile the firmware
+     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
-        # 强制锁定目标平台为 MediaTek MT7981
         echo "CONFIG_TARGET_mediatek=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
-        # 确保 Passwall 被选中
         echo "CONFIG_PACKAGE_luci-app-passwall=y" >> .config
-        # 重新生成完整配置（关键！）
         make olddefconfig
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s
