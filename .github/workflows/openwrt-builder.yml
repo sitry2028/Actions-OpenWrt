@@ -101,15 +101,14 @@ jobs:
     - name: Compile the firmware
       id: compile
       run: |
-        export TERM=xterm-256color
-        # 修复 swap 权限问题
-        sudo chmod 600 /swapfile
-        sudo swapon /swapfile || true
         cd openwrt
-        # 确保配置还在
-        make olddefconfig
+        # 强制锁定目标平台为 MediaTek MT7981
+        echo "CONFIG_TARGET_mediatek=y" >> .config
+        echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
+        echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
+        # 确保 Passwall 被选中（如果你希望包含）
+        echo "CONFIG_PACKAGE_luci-app-passwall=y" >> .config
         echo -e "$(nproc) thread compile"
-        # 开始编译
         make -j$(nproc) V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
