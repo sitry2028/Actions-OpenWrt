@@ -104,8 +104,7 @@ jobs:
         make defconfig
         make olddefconfig
         echo -e "$(nproc) thread compile"
-        # 使用 KCONFIG_ALLCONFIG=1 强制非交互
-        make -j$(nproc) V=s
+        KCONFIG_ALLCONFIG=1 make -j$(nproc) V=s
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
