@@ -101,6 +101,7 @@ jobs:
         echo "CONFIG_TARGET_mediatek_filogic=y" >> .config
         echo "CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y" >> .config
         echo "CONFIG_PACKAGE_luci-app-passwall=y" >> .config
+        yes "" | make oldconfig
         echo -e "$(nproc) thread compile"
         make -j$(nproc) V=s
         echo "status=success" >> $GITHUB_OUTPUT
