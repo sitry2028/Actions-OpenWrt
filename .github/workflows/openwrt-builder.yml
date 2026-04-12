@@ -81,6 +81,8 @@ jobs:
         CONFIG_TARGET_mediatek=y
         CONFIG_TARGET_mediatek_filogic=y
         CONFIG_TARGET_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax=y
+        CONFIG_PACKAGE_luci-app-passwall=y
+        CONFIG_PACKAGE_luci-theme-argon=y
         EOF
         make defconfig
         make download -j8
