@@ -27,6 +27,15 @@ cat > files/etc/uci-defaults/98-set-wifi-ssid <<EOF
 uci set wireless.@wifi-iface[0].ssid='TikTiok'
 uci set wireless.@wifi-iface[1].ssid='TikTiok'
 uci commit wireless
+# 设置默认 root 密码为 tiktiok（首次启动生效）
+mkdir -p files/etc/uci-defaults
+cat > files/etc/uci-defaults/99-set-password <<EOF
+#!/bin/sh
+echo 'tiktiok' | passwd root
+rm -f /etc/uci-defaults/99-set-password
+exit 0
+EOF
+chmod +x files/etc/uci-defaults/99-set-password
 wifi reload
 exit 0
 EOF
