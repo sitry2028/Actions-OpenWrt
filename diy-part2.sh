@@ -20,27 +20,29 @@ sed -i 's/0x580000 0x4000000/0x580000 0x7280000/' target/linux/mediatek/dts/mt79
 sed -i 's/ImmortalWrt/TikTiok/g' package/base-files/files/etc/board.json
 sed -i 's/ImmortalWrt/TikTiok/g' package/base-files/files/bin/config_generate
 
-# 2. 修改无线 SSID (2.4G & 5G) – 使用 uci-defaults 脚本，首次启动时自动设置（最可靠）
+# 2. 创建 uci-defaults 目录
 mkdir -p files/etc/uci-defaults
-cat > files/etc/uci-defaults/98-set-wifi-ssid <<EOF
+
+# 3. 修改无线 SSID (2.4G & 5G) – 首次启动时自动设置
+cat > files/etc/uci-defaults/98-set-wifi-ssid <<'EOF'
 #!/bin/sh
 uci set wireless.@wifi-iface[0].ssid='TikTiok'
 uci set wireless.@wifi-iface[1].ssid='TikTiok'
 uci commit wireless
-# 设置默认 root 密码为 tiktiok（首次启动生效）
-mkdir -p files/etc/uci-defaults
-cat > files/etc/uci-defaults/99-set-password <<EOF
+wifi reload
+exit 0
+EOF
+chmod +x files/etc/uci-defaults/98-set-wifi-ssid
+
+# 4. 设置默认 root 密码为 tiktiok（首次启动生效）
+cat > files/etc/uci-defaults/99-set-password <<'EOF'
 #!/bin/sh
 echo 'tiktiok' | passwd root
 rm -f /etc/uci-defaults/99-set-password
 exit 0
 EOF
 chmod +x files/etc/uci-defaults/99-set-password
-wifi reload
-exit 0
-EOF
-chmod +x files/etc/uci-defaults/98-set-wifi-ssid
 
-# 3. 修改 LuCI 页脚信息：替换版本字符串和链接
+# 5. 修改 LuCI 页脚信息：替换版本字符串和链接
 find feeds/luci -name "footer.htm" -exec sed -i 's|ImmortalWrt [0-9]\{2\}\.[0-9]\{2\}-SNAPSHOT [^<]*|https://www.tiktiok.top|g' {} \;
 find feeds/luci -name "footer.htm" -exec sed -i 's|https://github.com/openwrt/luci|https://www.tiktiok.top|g' {} \;
