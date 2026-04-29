@@ -46,3 +46,11 @@ chmod +x files/etc/uci-defaults/99-set-password
 # 5. 修改 LuCI 页脚信息：替换版本字符串和链接
 find feeds/luci -name "footer.htm" -exec sed -i 's|ImmortalWrt [0-9]\{2\}\.[0-9]\{2\}-SNAPSHOT [^<]*|https://www.tiktiok.top|g' {} \;
 find feeds/luci -name "footer.htm" -exec sed -i 's|https://github.com/openwrt/luci|https://www.tiktiok.top|g' {} \;
+
+# 6. 手动克隆 passwall2 源码（绕过 feed 更新失败）
+if [ ! -d package/luci-app-passwall2 ]; then
+    git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git package/luci-app-passwall2 || {
+        echo "Failed to clone passwall2, trying mirror..."
+        git clone --depth 1 https://gitclone.com/github.com/xiaorouji/openwrt-passwall2.git package/luci-app-passwall2
+    }
+fi
