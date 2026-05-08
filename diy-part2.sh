@@ -16,13 +16,13 @@ sed -i 's/0x580000 0x4000000/0x580000 0x7280000/' target/linux/mediatek/dts/mt79
 
 # ========== 新增修改 ==========
 
-# 1. 修改主机名 (从 ImmortalWrt 改为 TikTiok) – 只修改 config_generate 即可
+# 1. 修改主机名 (从 ImmortalWrt 改为 TikTiok)
 sed -i 's/ImmortalWrt/TikTiok/g' package/base-files/files/bin/config_generate
 
 # 2. 创建 uci-defaults 目录
 mkdir -p files/etc/uci-defaults
 
-# 3. 修改无线 SSID (2.4G & 5G) – 首次启动时自动设置
+# 3. 修改无线 SSID (2.4G & 5G)
 cat > files/etc/uci-defaults/98-set-wifi-ssid <<'EOF'
 #!/bin/sh
 uci set wireless.@wifi-iface[0].ssid='TikTiok'
@@ -33,5 +33,5 @@ exit 0
 EOF
 chmod +x files/etc/uci-defaults/98-set-wifi-ssid
 
-# 4. 修改 LuCI 页脚：替换为自定义链接（直接覆盖 footer 文件）
-find feeds/luci -path "*/themes/*/footer.htm" -exec sh -c 'echo "<a href=\"https://www.tiktiok.top/\" target=\"_blank\">TikTiok学堂免费资源</a>" > $0' {} \;
+# 4. 修改 LuCI 页脚（安全替换，不破坏文件）
+find feeds/luci -path "*/themes/*/footer.htm" -exec sed -i 's|<a href="[^"]*">[^<]*</a>|<a href="https://www.tiktiok.top/" target="_blank">TikTiok学堂免费资源</a>|g' {} \;
