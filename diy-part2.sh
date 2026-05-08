@@ -16,8 +16,7 @@ sed -i 's/0x580000 0x4000000/0x580000 0x7280000/' target/linux/mediatek/dts/mt79
 
 # ========== 新增修改 ==========
 
-# 1. 修改主机名 (从 ImmortalWrt 改为 TikTiok)
-sed -i 's/ImmortalWrt/TikTiok/g' package/base-files/files/etc/board.json
+# 1. 修改主机名 (从 ImmortalWrt 改为 TikTiok) – 只修改 config_generate 即可
 sed -i 's/ImmortalWrt/TikTiok/g' package/base-files/files/bin/config_generate
 
 # 2. 创建 uci-defaults 目录
@@ -36,10 +35,3 @@ chmod +x files/etc/uci-defaults/98-set-wifi-ssid
 
 # 4. 修改 LuCI 页脚：替换为自定义链接（直接覆盖 footer 文件）
 find feeds/luci -path "*/themes/*/footer.htm" -exec sh -c 'echo "<a href=\"https://www.tiktiok.top/\" target=\"_blank\">TikTiok学堂免费资源</a>" > $0' {} \;
-# 手动克隆 passwall 源码到 package 目录（避免 feed 失败）
-if [ ! -d package/luci-app-passwall ]; then
-    git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall.git package/luci-app-passwall || {
-        echo "Failed to clone passwall, trying mirror..."
-        git clone --depth 1 https://gitclone.com/github.com/xiaorouji/openwrt-passwall.git package/luci-app-passwall
-    }
-fi
