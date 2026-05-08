@@ -34,23 +34,5 @@ exit 0
 EOF
 chmod +x files/etc/uci-defaults/98-set-wifi-ssid
 
-# 4. 设置默认 root 密码为 tiktiok（首次启动生效）
-cat > files/etc/uci-defaults/99-set-password <<'EOF'
-#!/bin/sh
-echo 'tiktiok' | passwd root
-rm -f /etc/uci-defaults/99-set-password
-exit 0
-EOF
-chmod +x files/etc/uci-defaults/99-set-password
-
-# 5. 修改 LuCI 页脚信息：替换版本字符串和链接
-find feeds/luci -name "footer.htm" -exec sed -i 's|ImmortalWrt [0-9]\{2\}\.[0-9]\{2\}-SNAPSHOT [^<]*|https://www.tiktiok.top|g' {} \;
-find feeds/luci -name "footer.htm" -exec sed -i 's|https://github.com/openwrt/luci|https://www.tiktiok.top|g' {} \;
-
-# 6. 手动克隆 passwall2 源码（绕过 feed 更新失败）
-if [ ! -d package/luci-app-passwall2 ]; then
-    git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall2.git package/luci-app-passwall2 || {
-        echo "Failed to clone passwall2, trying mirror..."
-        git clone --depth 1 https://gitclone.com/github.com/xiaorouji/openwrt-passwall2.git package/luci-app-passwall2
-    }
-fi
+# 4. 修改 LuCI 页脚：替换为自定义链接（直接覆盖 footer 文件）
+find feeds/luci -path "*/themes/*/footer.htm" -exec sh -c 'echo "<a href=\"https://www.tiktiok.top/\" target=\"_blank\">TikTiok学堂免费资源</a>" > $0' {} \;
