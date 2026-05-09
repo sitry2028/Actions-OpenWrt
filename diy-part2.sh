@@ -1,4 +1,3 @@
-
 #!/bin/bash
 #
 # https://github.com/P3TERX/Actions-OpenWrt
@@ -34,5 +33,16 @@ exit 0
 EOF
 chmod +x files/etc/uci-defaults/98-set-wifi-ssid
 
-# 4. 修改 LuCI 页脚：仅替换第一个链接（Powered by ...）为自定义链接，保留 Argon 和固件版本
-find feeds/luci -path "*/themes/*/footer.htm" -exec sed -i 's|<a[^>]*>Powered by [^<]*</a>|<a href="https://www.tiktiok.top/" target="_blank">TikTiok学堂免费资源</a>|' {} \;
+# 4. 修改 LuCI 页脚：精确替换第一个链接（Powered by LuCI...），保留 Argon 和固件版本
+# 处理 argon 主题
+ARGO_FOOTER="feeds/luci/themes/luci-theme-argon/luasrc/view/themes/argon/footer.htm"
+if [ -f "$ARGO_FOOTER" ]; then
+    # 匹配包含 'class="luci-link"' 的行，将第一个 <a>...</a> 整体替换为自定义链接
+    sed -i '/class="luci-link"/ { s|<a class="luci-link"[^>]*>.*</a>|<a href="https://www.tiktiok.top/" target="_blank">TikTiok学堂免费资源</a>| }' "$ARGO_FOOTER"
+fi
+
+# 处理 bootstrap 主题（作为备用，如果存在）
+BOOT_FOOTER="feeds/luci/themes/luci-theme-bootstrap/luasrc/view/themes/bootstrap/footer.htm"
+if [ -f "$BOOT_FOOTER" ]; then
+    sed -i '/class="luci-link"/ { s|<a class="luci-link"[^>]*>.*</a>|<a href="https://www.tiktiok.top/" target="_blank">TikTiok学堂免费资源</a>| }' "$BOOT_FOOTER"
+fi
