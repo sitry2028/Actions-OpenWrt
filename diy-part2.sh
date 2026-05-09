@@ -1,3 +1,4 @@
+
 #!/bin/bash
 #
 # https://github.com/P3TERX/Actions-OpenWrt
@@ -33,5 +34,5 @@ exit 0
 EOF
 chmod +x files/etc/uci-defaults/98-set-wifi-ssid
 
-# 4. 修改 LuCI 页脚（安全替换，不破坏文件）
-find feeds/luci -path "*/themes/*/footer.htm" -exec sed -i 's|<a href="[^"]*">[^<]*</a>|<a href="https://www.tiktiok.top/" target="_blank">TikTiok学堂免费资源</a>|g' {} \;
+# 4. 修改 LuCI 页脚：仅替换第一个链接（Powered by ...）为自定义链接，保留 Argon 和固件版本
+find feeds/luci -path "*/themes/*/footer.htm" -exec sed -i 's|<a[^>]*>Powered by [^<]*</a>|<a href="https://www.tiktiok.top/" target="_blank">TikTiok学堂免费资源</a>|' {} \;
